@@ -1,0 +1,37 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name:  pmaria
+spec:
+  serviceName: "pmaria"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  pmaria        
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: pmaria
+        image: bitnami/mariadb:latest
+        env:
+          - name: ALLOW_EMPTY_PASSWORD
+            value: "yes"
+          - name: MARIADB_DATABASE
+            value: bitnami_jasperreports
+          - name: MARIADB_USER
+            value: bn_jasperreports
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+        - mountPath: /bitnami
+          name: gitjasper-mariadb-data  
+  volumeClaimTemplates:
+  - metadata:
+      name: gitjasper-mariadb-data  
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 500Mi
+      storageClassName: standard

@@ -1,0 +1,43 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name:  jasperreports
+spec:
+  serviceName: "jasperreports"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  jasperreports        
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: jasperreports
+        image: bitnami/jasperreports:latest
+        env:
+          - name: ALLOW_EMPTY_PASSWORD
+            value: "yes"
+          - name: JASPERREPORTS_DATABASE_NAME
+            value: bitnami_jasperreports
+          - name: JASPERREPORTS_DATABASE_USER
+            value: bn_jasperreports
+          - name: MARIADB_HOST
+            value: pmaria
+          - name: MARIADB_PORT_NUMBER
+            value: "3306"
+        ports:
+        - containerPort: 8080
+        - containerPort: 8443
+        volumeMounts:
+        - mountPath: /bitnami
+          name: gitjasper-jasperreports-data  
+  volumeClaimTemplates:
+  - metadata:
+      name: gitjasper-jasperreports-data 
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 500Mi
+      storageClassName: standard
+### la password e user/bitnami
